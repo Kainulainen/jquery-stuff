@@ -9,21 +9,20 @@ $.fn.isEmpty = function() {
 };
 
 //Cross-browser event that supports key up, mouse paste and a small throttle
-$.fn.textEvent = function(type, func, ms) {
+$.fn.textEvent = function(func, ms) {
   var currentId = $.textEventId ? ++$.textEventId : $.textEventId = 1
-  this[type]("keyup", throttle(currentId, ms));
-  this[type]($.support.noCloneEvent ? "input" : "paste", throttle(currentId, ms)); 
+  this.live("keyup", throttle(currentId, ms));
+  this.live($.support.noCloneEvent ? "input" : "paste", throttle(currentId, ms)); 
   function throttle(currentId, ms) {
     return function() {
       var _this = this;
       var id = 'textEvent' + currentId;
-      if(this[id]) clearTimeout(this[id]);
-      this[id] = setTimeout(function() {
-      console.log(_this.oldValue,_this.value);
-      //TODO bug: with multiple bindings the oldValue is updated too early to be equal with current value
-        if(typeof _this.oldValue == 'undefined' || _this.oldValue != _this.value) {
+	    if(typeof this[id] == 'undefined') this[id] = {};
+      if(this[id].timeoutId) clearTimeout(this[id].timeoutId);
+      this[id].timeoutId = setTimeout(function() {
+        if(typeof _this[id].oldValue == 'undefined' || _this[id].oldValue != _this.value) {
           func.apply(_this, arguments);
-          _this.oldValue = _this.value;
+          _this[id].oldValue = _this.value;
         }
       } , ms || 100);
     }

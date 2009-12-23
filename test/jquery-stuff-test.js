@@ -2,8 +2,8 @@ window.onload = (function(){try{
 module("textEvent");
 
 test("is binded", function() {
-  $('#items input').textEvent('live', validate, 1000);
-  $('#items input').textEvent('live', sum, 1000);
+  $('#items input').textEvent(validate, 1000);
+  $('#items input').textEvent(sum, 1000);
 });
 
 
