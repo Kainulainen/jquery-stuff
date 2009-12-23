@@ -9,16 +9,26 @@ $.fn.isEmpty = function() {
 };
 
 //Cross-browser event that supports key up, mouse paste and a small throttle
-//Example 1: $('input').textEvent('live', function() { alert('new value is '+$(this).val());})
-//Example 2: $('input').textEvent('bind', function() {...}
-$.fn.textEvent = function(type, func) {
-  this[type]("keyup input paste", function() {
-    setTimeout((function(instance, method) {
-      return function() {
-        return method.apply(instance, arguments);
-      };
-    })(this, func), 10);
-  });
+$.fn.textEvent = function(type, func, ms) {
+  var currentId = $.textEventId ? ++$.textEventId : $.textEventId = 1
+  this[type]("keyup", throttle(currentId, ms));
+  this[type]($.support.noCloneEvent ? "input" : "paste", throttle(currentId, ms)); 
+  function throttle(currentId, ms) {
+    return function() {
+      var _this = this;
+      var id = 'textEvent' + currentId;
+	  if(typeof _this[id] == 'undefined') _this[id] = {};
+      if(this[id].timeoutId) clearTimeout(this[id].timeoutId);
+	  this[id].oldValue = _this.value;
+      this[id].timeoutId = setTimeout(function() {
+      console.log(_this.oldValue,_this.value);
+        if(typeof _this[id].oldValue == 'undefined' || _this[id].oldValue != _this.value) {
+          func.apply(_this, arguments);
+          _this[id].oldValue = _this.value;
+        }
+      } , ms || 100);
+    }
+  }
 };
 
 //Usefull for simulating events in tests
