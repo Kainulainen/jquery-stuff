@@ -11,11 +11,9 @@ test("is binded", function() {
 }catch(e){}});
   
 function validate() {
-  console.log('validate')
   $(this).toggleClass('error',isNaN($(this).val()));
 }
 function sum() {
-  console.log('sum');
   var array = $('#items input').map(function() {return parseInt($(this).val()) });
   $('#total input').val(array[0]+array[1]);
 }
